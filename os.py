@@ -1,11 +1,11 @@
 """
 Classical algorithms: SJF, FCFS, RR
-Criteria: Response time, waiting time, turnaround time, 
+Criteria: Response time, waiting time, turnaround time,
 throughput, cpu utilization
 """
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 
 def create_processes():
@@ -28,7 +28,7 @@ def fcfs(processes):
         response_arr.append(response)
         waiting_arr.append(response - processes['new_to_ready'][i])
         turnaround_arr.append(processes['cpu_bursts'][i]
-                              + processes['new_to_ready'][i] + processes['waiting'][i])
+                              + processes['new_to_ready'][i] + waiting_arr[i])
         response += processes['cpu_bursts'][i]
 
     processes['response'] = response_arr
@@ -38,9 +38,9 @@ def fcfs(processes):
     return processes
 
 
-def sjf(processes):
+def sjf_np(processes):
     processes.sort_values(by='cpu_bursts', inplace=True)
-    return fcfs(processes)
+    return fcfs(processes).sort_index()
 
 
 def rr(processes, qt):
@@ -50,5 +50,8 @@ def rr(processes, qt):
 def main():
     processes = create_processes()
     fcfs_result = fcfs(processes)
-    sjf_result = sjf(processes)
+    sjf_np_result = sjf_np(processes)
     rr_result = rr(processes, 4)
+
+if __name__ == '__main__':
+    main()
