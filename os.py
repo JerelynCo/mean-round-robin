@@ -34,10 +34,17 @@ def fcfs(processes):
 
     return processes
 
+def sjf(processes):
+	processes.sort_values(by='cpu_bursts', inplace=True)
+	return fcfs(processes)
+
+def rr(processes, qt):
 
 
 
 def main():
     processes = create_processes()
     fcfs_result = fcfs(processes)
+    sjf_result = sjf(processes)
+    rr_result = rr(processes, 4)
     return 0
