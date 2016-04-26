@@ -55,7 +55,6 @@ def rr(processes, qt):
     waiting_arr = [0] * processes.shape[0]
     response_arr = processes_mut['new_to_ready'][0]
     turnaround_arr = [0] * processes.shape[0]
-    extra_bursts = 0
     acc = 0
     not_completed = True
 
@@ -71,8 +70,8 @@ def rr(processes, qt):
                     turnaround_arr[i] = acc
                 else:
                     acc += qt
-                processes_mut.set_value(idx, 'cpu_bursts', 
-                    result)
+                processes_mut.set_value(idx, 'cpu_bursts',
+                                        result)
             else:
                 processes_mut.set_value(idx, 'done', True)
         not_completed = False in processes_mut.done.unique()
@@ -93,13 +92,14 @@ def mean_rr(processes):
     waiting_arr = [0] * processes.shape[0]
     response_arr = processes_mut['new_to_ready'][0]
     turnaround_arr = [0] * processes.shape[0]
-    extra_bursts = 0
     acc = 0
     not_completed = True
 
     while not_completed:
         for i in range(len(processes_mut.index)):
-            qt = np.ceil(processes_mut[processes_mut.done == False]['cpu_bursts'].mean())
+            qt = np.ceil(
+                processes_mut[processes_mut.done == False]['cpu_bursts']
+                .mean())
             if qt <= 0:
                 not_completed = False
             idx = processes_mut.iloc[i].name
@@ -112,8 +112,8 @@ def mean_rr(processes):
                     turnaround_arr[i] = acc
                 else:
                     acc += qt
-                processes_mut.set_value(idx, 'cpu_bursts', 
-                    result)
+                processes_mut.set_value(idx, 'cpu_bursts',
+                                        result)
             else:
                 processes_mut.set_value(idx, 'done', True)
         not_completed = False in processes_mut.done.unique()
