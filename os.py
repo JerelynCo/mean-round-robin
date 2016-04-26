@@ -18,6 +18,7 @@ def create_processes():
 
 
 def fcfs(processes):
+    processes = processes.copy()
     """First Come, First Served"""
     waiting_arr = []
     response_arr = []
@@ -41,37 +42,79 @@ def fcfs(processes):
 
 def sjf_np(processes):
     """Shortest Job First - Non-preemptive"""
+    processes = processes.copy()
     processes.sort_values(by='cpu_bursts', inplace=True)
     return fcfs(processes).sort_index()
 
 
 def rr(processes, qt):
     """Round Robin"""
-    processes_mut = processes.copy()
-    processes_mut['done'] = False
+    processes = processes.copy()
+    processes['done'] = False
 
     waiting_arr = [0] * processes.shape[0]
     response_arr = [0] * processes.shape[0]
     turnaround_arr = [0] * processes.shape[0]
+    extra_bursts = 0
     acc = 0
     not_completed = True
 
-    response = processes_mut['new_to_ready'][0]
+    response = processes['new_to_ready'][0]
     while not_completed:
         for i in range(len(processes.index)):
-            idx = processes_mut.iloc[i].name
-            if processes_mut.iloc[i].cpu_bursts > 0:
-                processes_mut.set_value(idx, 'cpu_bursts', 
-                    processes_mut.iloc[i].cpu_bursts - qt)
+            idx = processes.iloc[i].name
+            cpu_burst = processes.iloc[i]['cpu_bursts']
+            if cpu_burst > 0:
+                result = cpu_burst - qt
+                if result < 0:
+                    extra_bursts = abs(result)
+                    result = 0
+                processes.set_value(idx, 'cpu_bursts', 
+                    result)
             else:
-                processes_mut.set_value(idx, 'done', True)
-        not_completed = processes_mut[processes_mut.done == True].empty
+                processes.set_value(idx, 'done', True)
+        not_completed = False in processes.done.unique()
 
-    processes_mut['response'] = response_arr
-    processes_mut['waiting'] = waiting_arr
-    processes_mut['turnaround'] = turnaround_arr
+    processes['response'] = response_arr
+    processes['waiting'] = waiting_arr
+    processes['turnaround'] = turnaround_arr
 
-    return processes_mut.drop('done', axis=1)
+    return processes
+
+
+def mean_rr(processes):
+    processes = processes.copy()
+    processes['done'] = False
+
+    waiting_arr = [0] * processes.shape[0]
+    response_arr = [0] * processes.shape[0]
+    turnaround_arr = [0] * processes.shape[0]
+    extra_bursts = 0
+    acc = 0
+    not_completed = True
+
+    response = processes['new_to_ready'][0]
+    while not_completed:
+        for i in range(len(processes.index)):
+            qt = np.ceil(processes[processes.done == False]['cpu_bursts'].mean())
+            idx = processes.iloc[i].name
+            cpu_burst = processes.iloc[i]['cpu_bursts']
+            if cpu_burst > 0:
+                result = cpu_burst - qt
+                if result < 0:
+                    extra_bursts = abs(result)
+                    result = 0
+                processes.set_value(idx, 'cpu_bursts', 
+                    result)
+            else:
+                processes.set_value(idx, 'done', True)
+        not_completed = False in processes.done.unique()
+
+    processes['response'] = response_arr
+    processes['waiting'] = waiting_arr
+    processes['turnaround'] = turnaround_arr
+
+    return processes
 
 
 def main():
