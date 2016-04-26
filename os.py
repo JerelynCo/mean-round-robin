@@ -70,7 +70,7 @@ def rr(processes, qt):
                 if result <= 0:
                     result = 0
                     acc += cpu_burst
-                    turnaround_arr[i] = acc
+                    turnaround_arr[i] = acc + response_arr[i]
                 else:
                     acc += qt
                 processes_mut.set_value(idx, 'cpu_bursts',
@@ -115,7 +115,7 @@ def mean_rr(processes):
                 if result <= 0:
                     result = 0
                     acc += cpu_burst
-                    turnaround_arr[i] = acc
+                    turnaround_arr[i] = acc + response_arr[i]
                 else:
                     acc += qt
                 processes_mut.set_value(idx, 'cpu_bursts',
@@ -130,9 +130,6 @@ def mean_rr(processes):
     processes_mut['waiting'] = processes_mut['turnaround'] - processes_mut['cpu_bursts'] - processes_mut['response']
 
     return processes_mut
-
-
-
 
 def main():
     processes = create_processes()
