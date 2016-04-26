@@ -50,10 +50,10 @@ def sjf_np(processes):
 def rr(processes, qt):
     """Round Robin"""
     processes_mut = processes.copy()
+    processes_mut['started'] = False
     processes_mut['done'] = False
 
-    waiting_arr = [0] * processes.shape[0]
-    response_arr = processes_mut['new_to_ready'][0]
+    response_arr = list(processes_mut['new_to_ready'])
     turnaround_arr = [0] * processes.shape[0]
     acc = 0
     not_completed = True
@@ -62,6 +62,9 @@ def rr(processes, qt):
         for i in range(len(processes_mut.index)):
             idx = processes_mut.iloc[i].name
             cpu_burst = processes_mut.iloc[i]['cpu_bursts']
+            if not processes_mut.loc[idx]['started']:
+                response_arr[i] += acc
+                processes_mut.set_value(idx, 'started', True)
             if cpu_burst > 0:
                 result = cpu_burst - qt
                 if result <= 0:
@@ -78,32 +81,35 @@ def rr(processes, qt):
 
     processes_mut['cpu_bursts'] = processes['cpu_bursts']
     processes_mut['response'] = response_arr
-    processes_mut['waiting'] = waiting_arr
     processes_mut['turnaround'] = turnaround_arr
+    processes_mut['waiting'] = processes_mut['turnaround'] - processes_mut['cpu_bursts'] - processes_mut['response']
 
-    return processes_mut
+    return processes_mut.drop(['done', 'started'], axis=1)
 
 
 def mean_rr(processes):
     """Round Robin with Dynamic Quantum Time via Mean Average"""
     processes_mut = processes.copy()
+    processes_mut['started'] = False
     processes_mut['done'] = False
 
-    waiting_arr = [0] * processes.shape[0]
-    response_arr = processes_mut['new_to_ready'][0]
+    response_arr = list(processes_mut['new_to_ready'])
     turnaround_arr = [0] * processes.shape[0]
     acc = 0
     not_completed = True
 
     while not_completed:
         for i in range(len(processes_mut.index)):
+            idx = processes_mut.iloc[i].name
+            cpu_burst = processes_mut.iloc[i]['cpu_bursts']
             qt = np.ceil(
                 processes_mut[processes_mut.done == False]['cpu_bursts']
                 .mean())
             if qt <= 0:
                 not_completed = False
-            idx = processes_mut.iloc[i].name
-            cpu_burst = processes_mut.iloc[i]['cpu_bursts']
+            if not processes_mut.loc[idx]['started']:
+                response_arr[i] += acc
+                processes_mut.set_value(idx, 'started', True)
             if cpu_burst > 0:
                 result = cpu_burst - qt
                 if result <= 0:
@@ -120,10 +126,12 @@ def mean_rr(processes):
 
     processes_mut['cpu_bursts'] = processes['cpu_bursts']
     processes_mut['response'] = response_arr
-    processes_mut['waiting'] = waiting_arr
     processes_mut['turnaround'] = turnaround_arr
+    processes_mut['waiting'] = processes_mut['turnaround'] - processes_mut['cpu_bursts'] - processes_mut['response']
 
     return processes_mut
+
+
 
 
 def main():
