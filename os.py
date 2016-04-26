@@ -16,7 +16,6 @@ def create_processes():
                              index=['p1', 'p2', 'p3', 'p4', 'p5'])
     return processes
 
-
 def fcfs(processes):
     """First Come, First Served"""
     processes = processes.copy()
@@ -39,13 +38,11 @@ def fcfs(processes):
 
     return processes
 
-
 def sjf_np(processes):
     """Shortest Job First - Non-preemptive"""
     processes = processes.copy()
     processes.sort_values(by='cpu_bursts', inplace=True)
     return fcfs(processes).sort_index()
-
 
 def rr(processes, qt):
     """Round Robin"""
@@ -85,7 +82,6 @@ def rr(processes, qt):
     processes_mut['waiting'] = processes_mut['turnaround'] - processes_mut['cpu_bursts'] - processes_mut['response']
 
     return processes_mut.drop(['done', 'started'], axis=1)
-
 
 def mean_rr(processes):
     """Round Robin with Dynamic Quantum Time via Mean Average"""
