@@ -9,8 +9,7 @@ import pandas as pd
 
 
 def create_processes():
-    # np.random.randint(5, 15) for i in range(5)
-    cpu_bursts = [6, 3, 4, 1, 5]
+    cpu_bursts = [np.random.randint(5, 15) for i in range(5)]
     new_to_ready = [5] * 5
     processes = pd.DataFrame({"cpu_bursts": cpu_bursts,
                               "new_to_ready": new_to_ready},
