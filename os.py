@@ -47,7 +47,7 @@ def sjf_np(processes):
     return fcfs(processes).sort_index()
 
 
-def rr(processes, qt, mean_variant=False):
+def rr(processes, qt, mean_variant=False, modified_mean_variant=False):
     """Round Robin"""
     processes_mut = processes.copy()
     processes_mut['started'] = False
@@ -65,6 +65,11 @@ def rr(processes, qt, mean_variant=False):
             cpu_burst = processes_mut.iloc[i]['cpu_bursts']
             # Mean round robin
             if mean_variant:
+                qt = np.around(
+                    processes_mut[processes_mut.done == False]['cpu_bursts']
+                    .mean())
+            # Modified mean round robin        
+            if modified_mean_variant:
                 qt = np.ceil(
                     processes_mut[processes_mut.done == False]['cpu_bursts']
                     .mean())
