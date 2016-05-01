@@ -1,0 +1,4 @@
+fcfs: Throughput of 3 with clock cycle benchmark of 30
+sfj: Throughput of 4 with clock cycle benchmark of 30
+rr: Throughput of 2 with clock cycle benchmark of 30
+mean rr: Throughput of 2 with clock cycle benchmark of 30
