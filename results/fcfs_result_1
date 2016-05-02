@@ -1,6 +1,0 @@
-,cpu_bursts,new_to_ready,response,waiting,turnaround
-p1,7,5,5,0,12
-p2,5,5,12,7,17
-p3,9,5,17,12,26
-p4,7,5,26,21,33
-p5,11,5,33,28,44
