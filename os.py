@@ -24,7 +24,7 @@ def create_processes():
     return processes
 
 
-def fcfs(processes, algo):
+def fcfs(processes, name):
     """First Come, First Served"""
     processes = processes.copy()
     waiting_arr = []
@@ -45,19 +45,19 @@ def fcfs(processes, algo):
     processes['turnaround'] = turnaround_arr
 
     print("{}: Throughput of {} with clock cycle benchmark of {}".format(
-        algo, get_throughput(processes), cc))
+        name, get_throughput(processes), cc))
     return processes
 
 
-def sjf_np(processes, algo):
+def sjf_np(processes, name):
     """Shortest Job First - Non-preemptive"""
     processes = processes.copy()
     processes.sort_values(by='cpu_bursts', inplace=True)
 
-    return fcfs(processes, algo).sort_index()
+    return fcfs(processes, name).sort_index()
 
 
-def rr(processes, qt, algo, mean_variant=False, modified_mean_variant=False):
+def rr(processes, qt, name, mean_variant=False, modified_mean_variant=False):
     """Round Robin"""
     processes_mut = processes.copy()
     processes_mut['started'] = False
@@ -110,7 +110,7 @@ def rr(processes, qt, algo, mean_variant=False, modified_mean_variant=False):
         processes_mut['cpu_bursts'] - processes_mut['new_to_ready']
 
     print("{}: Throughput of {} with clock cycle benchmark of {}".format(
-        algo, get_throughput(processes_mut), cc))
+        name, get_throughput(processes_mut), cc))
     return processes_mut.drop(['done', 'started'], axis=1)
 
 
@@ -137,7 +137,7 @@ def main():
         f.close()
 
         ## Displaying of evaluations
-        print("\n*****Performance Evaluation per Algorithm*****")
+        print("\n*****Performance Evaluation per algorithm*****")
         print("First Come, First Served")
         print(fcfs_result)
         print("\nShortest Job First - Non-Preemptive")
